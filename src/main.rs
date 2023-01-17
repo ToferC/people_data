@@ -58,6 +58,8 @@ async fn main() -> std::io::Result<()> {
         Err(err) => panic!("Must supply API key in env variables to use: {}", err),
     };
 
+    println!("Serving on: {}:{}", &host, &port);
+
     HttpServer::new(move || {
         let mut tera = Tera::new(
             "templates/**/*").unwrap();
