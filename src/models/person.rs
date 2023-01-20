@@ -8,38 +8,27 @@ use uuid::Uuid;
 use async_graphql::*;
 use rand::{Rng, thread_rng};
 
+use crate::graphql::graphql_translate;
 
 use crate::schema::*;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable, AsChangeset)]
 #[table_name = "persons"]
-/// Referenced by PublicHealthProfile
-/// Referenced by Trip
-/// Need to add disaggregated data on vulnerable populations
-/// and do this ethically.
+/// Referenced by Team
+/// Referenced by ReportingRelationship
 pub struct Person {
     pub id: Uuid,
     pub family_name: String,
     pub given_name: String,
     pub additional_names: Option<Vec<String>>,
-    pub birth_date: NaiveDate,
-    pub gender: String,
 
-    pub email: String,
-    pub phone: String,
-
-    pub organization_id: Uuid,
-    pub branch_id: Uuid,
-    pub centre_id: Uuid,
-    pub division_id: Uuid,
-    pub team_id: Uuid,
-    pub product_teams_contribution_ids: Vec<Uuid>,
-
-    pub travel_group_id: Uuid,
+    pub organization_id: Uuid, // Organization
     
-    pub approved_access_level: String, // AccessLevel
-    pub approved_access_granularity: String, // Granularity
-    pub created_at: NaiveDateTime,
+    pub responsible_for_teams: Vec<Uuid>, // Vec<Team>
+    pub role_ids: Vec<Uuid>, // Vec<Role>    
+
+    pub created_at: NaiveDate,
+    pub updated_at: NaiveDate,
 }
 
 
@@ -55,10 +44,7 @@ impl Person {
     
     pub fn get_or_create(conn: &PgConnection, person: &NewPerson) -> FieldResult<Person> {
         let res = persons::table
-        .filter(persons::travel_document_id.eq(&person.travel_document_id))
         .filter(persons::family_name.eq(&person.family_name))
-        .filter(persons::travel_document_issuer_id.eq(&person.travel_document_issuer_id))
-        .filter(persons::birth_date.eq(&person.birth_date))
         .distinct()
         .first(conn);
         
