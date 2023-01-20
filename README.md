@@ -1,10 +1,14 @@
-# Web Starter Rust
+# People Data Analytics
 
-This repo is a starter app for my Web-dev. I've probably built something similar about six times, so hopefully this forestalls a 7th.
+This app is a learning project and attempt to create a data-centric model and Graphql API of employee skills, capabilities, certifications and work over time.
 
-- [x] Actix-Web w/ async
-- [x] Tera for templates
-- [x] Diesel accessing Postgresql DB
+- [ ] Model people and their roles on teams
+- [ ] Model people's skills and validate them based on their work
+- [ ] Model how teams fit into an org hierarchy
+- [ ] Model organizational capacity and work in progress
+- [ ] Time-series modelling of changes to the organization over time as people change roles, learn and evolve.
+
+It also includes :
 - [x] User models
 - [x] Automated Admin Generation
 - [x] Authentication and sign-in
