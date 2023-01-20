@@ -15,34 +15,20 @@ use crate::schema::*;
 #[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable, AsChangeset)]
 #[table_name = "persons"]
 /// Referenced by Team
-/// Referenced by Trip
+/// Referenced by ReportingRelationship
 pub struct Person {
     pub id: Uuid,
     pub family_name: String,
     pub given_name: String,
     pub additional_names: Option<Vec<String>>,
 
-    pub organization_id: Uuid,
+    pub organization_id: Uuid, // Organization
+    
+    pub responsible_for_teams: Vec<Uuid>, // Vec<Team>
+    pub role_ids: Vec<Uuid>, // Vec<Role>    
 
-    pub role_ids: Vec<Uuid>,
-
-    // break into demographics module
-    pub birth_date: NaiveDate,
-    pub gender: String,
-
-    // break into contact_information module
-    pub email: String,
-    pub phone: String,
-    pub work_address: String,
-
-    // break into employee_information module
-    pub group: String,
-    pub level: i32,
-
-    // break into data_access module    
-    pub approved_access_level: String, // AccessLevel
-    pub approved_access_granularity: String, // Granularity
-    pub created_at: NaiveDateTime,
+    pub created_at: NaiveDate,
+    pub updated_at: NaiveDate,
 }
 
 
@@ -58,10 +44,7 @@ impl Person {
     
     pub fn get_or_create(conn: &PgConnection, person: &NewPerson) -> FieldResult<Person> {
         let res = persons::table
-        .filter(persons::travel_document_id.eq(&person.travel_document_id))
         .filter(persons::family_name.eq(&person.family_name))
-        .filter(persons::travel_document_issuer_id.eq(&person.travel_document_issuer_id))
-        .filter(persons::birth_date.eq(&person.birth_date))
         .distinct()
         .first(conn);
         

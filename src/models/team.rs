@@ -17,13 +17,12 @@ use crate::schema::*;
 /// Referenced by Role
 pub struct Team {
     pub id: Uuid,
+    pub organization_id: Uuid,
+    pub org_tier_id: Uuid,
 
     pub name_en: String,
     pub name_fr: String,
 
-    pub organization_id: Uuid,
-    pub responsible_person_id: Uuid,
-    
     pub description_en: String,
     pub description_fr: String,
 
@@ -80,6 +79,7 @@ pub struct NewTeam {
     pub name_fr: String,
 
     pub organization_id: Uuid,
+    pub org_tier_id: Uuid,
     
     pub description_en: String,
     pub description_fr: String,
@@ -91,6 +91,7 @@ impl NewTeam {
         name_en: String,
         name_fr: String,
         organization_id: Uuid,
+        org_tier_id: Uuid,
         description_en: String,
         description_fr: String,
     ) -> Self {
@@ -98,6 +99,7 @@ impl NewTeam {
             name_en,
             name_fr,
             organization_id,
+            org_tier_id,
             description_en,
             description_fr,
         }
