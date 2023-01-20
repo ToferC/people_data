@@ -13,65 +13,60 @@ use crate::graphql::graphql_translate;
 use crate::schema::*;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable, AsChangeset)]
-#[table_name = "roles"]
-/// Intermediary data structure between Person and team
-/// Referenced by Person
-pub struct Role {
+#[table_name = "affiliations"]
+pub struct Affiliation {
     pub id: Uuid,
-    pub team_id: Uuid,
-    pub title_en: String,
-    pub title_fr: String,
-    pub effort: f32,
+    pub organization_id: Uuid,
+    pub role: String,
     pub start_date: NaiveDate,
-    pub end_date: Option<NaiveDate>,
+    pub end_date: NaiveDate,
     pub created_at: NaiveDate,
     pub updated_at: NaiveDate,
 }
 
-
 // Non Graphql
-impl Role {
-    pub fn create(conn: &PgConnection, role: &NewRole) -> FieldResult<Role> {
-        let res = diesel::insert_into(roles::table)
-        .values(role)
+impl Affiliation {
+    pub fn create(conn: &PgConnection, affiliation: &NewAffiliation) -> FieldResult<Affiliation> {
+        let res = diesel::insert_into(affiliations::table)
+        .values(affiliation)
         .get_result(conn);
         
         graphql_translate(res)
     }
     
-    pub fn get_or_create(conn: &PgConnection, role: &NewRole) -> FieldResult<Role> {
-        let res = roles::table
-        .filter(roles::family_name.eq(&role.family_name))
+    pub fn get_or_create(conn: &PgConnection, affiliation: &NewAffiliation) -> FieldResult<Affiliation> {
+        let res = affiliations::table
+        .filter(affiliations::family_name.eq(&affiliation.family_name))
         .distinct()
         .first(conn);
         
-        let role = match res {
+        let affiliation = match res {
             Ok(p) => p,
             Err(e) => {
-                // Role not found
+                // Affiliation not found
                 println!("{:?}", e);
-                let p = Role::create(conn, role).expect("Unable to create role");
+                let p = Affiliation::create(conn, affiliation).expect("Unable to create affiliation");
                 p
             }
         };
-        Ok(role)
+        Ok(affiliation)
     }
 
     pub fn find_all() -> Result<Vec<Self>, CustomError> {
         let conn = database::connection()?;
-        let roles = roles::table.load::<Role>(&conn)?;
-        Ok(roles)
+        let affiliations = affiliations::table.load::<Affiliation>(&conn)?;
+        Ok(affiliations)
     }
 
     pub fn find(id: Uuid) -> Result<Self, CustomError> {
         let conn = database::connection()?;
-        let role = roles::table.filter(roles::id.eq(id)).first(&conn)?;
-        Ok(role)
+        let affiliation = affiliations::table.filter(affiliations::id.eq(id)).first(&conn)?;
+        Ok(affiliation)
     }
     
     pub fn update(&self, conn: &PgConnection) -> FieldResult<Self> {
-        let res = diesel::update(roles::table)
-        .filter(roles::id.eq(&self.id))
+        let res = diesel::update(affiliations::table)
+        .filter(affiliations::id.eq(&self.id))
         .set(self)
         .get_result(conn)?;
         
@@ -80,35 +75,29 @@ impl Role {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Insertable, SimpleObject)]
-#[table_name = "roles"]
-pub struct NewRole {
-    pub team_id: Uuid,
-    pub title_en: String,
-    pub title_fr: String,
-    pub effort: f32,
+#[table_name = "affiliations"]
+pub struct NewAffiliation {
+    pub organization_id: Uuid,
+    pub role: String,
     pub start_date: NaiveDate,
-    pub end_date: Option<NaiveDate>,
+    pub end_date: NaiveDate,
     pub created_at: NaiveDate,
     pub updated_at: NaiveDate,
 }
 
-impl NewRole {
+impl NewAffiliation {
 
     pub fn new(
-        team_id: Uuid,
-        title_en: String,
-        title_fr: String,
-        effort: f32,
+        organization_id: Uuid,
+        role: String,
         start_date: NaiveDate,
-        end_date: Option<NaiveDate>,
+        end_date: NaiveDate,
         created_at: NaiveDate,
         updated_at: NaiveDate,
     ) -> Self {
-        NewRole {
-            team_id,
-            title_en,
-            title_fr,
-            effort,
+        NewAffiliation {
+            organization_id,
+            role,
             start_date,
             end_date,
             created_at,

@@ -41,6 +41,18 @@ impl Person {
         
         graphql_translate(res)
     }
+
+    pub fn find_all() -> Result<Vec<Self>, CustomError> {
+        let conn = database::connection()?;
+        let persons = persons::table.load::<Person>(&conn)?;
+        Ok(persons)
+    }
+
+    pub fn find(id: Uuid) -> Result<Self, CustomError> {
+        let conn = database::connection()?;
+        let person = persons::table.filter(persons::id.eq(id)).first(&conn)?;
+        Ok(person)
+    }
     
     pub fn get_or_create(conn: &PgConnection, person: &NewPerson) -> FieldResult<Person> {
         let res = persons::table
@@ -78,16 +90,14 @@ pub struct NewPerson {
     pub family_name: String,
     pub given_name: String,
     pub additional_names: Option<Vec<String>>,
-    pub birth_date: NaiveDate,
-    pub gender: String,
 
-    pub travel_document_id: String,
-    pub travel_document_issuer_id: Uuid, // Country
+    pub organization_id: Uuid, // Organization
+    
+    pub responsible_for_teams: Vec<Uuid>, // Vec<Team>
+    pub role_ids: Vec<Uuid>, // Vec<Role>    
 
-    pub travel_group_id: Uuid,
-
-    pub approved_access_level: String, // AccessLevel
-    pub approved_access_granularity: String, // Granularity
+    pub created_at: NaiveDate,
+    pub updated_at: NaiveDate,
 }
 
 impl NewPerson {
@@ -96,48 +106,21 @@ impl NewPerson {
         family_name: String,
         given_name: String,
         additional_names: Option<Vec<String>>,
-        birth_date: NaiveDate,
-        gender: String,
-        travel_document_id: String,
-        travel_document_issuer_id: Uuid, // Country
-        travel_group_id: Uuid,
-        approved_access_level: String, // AccessLevel
-        approved_access_granularity: String,
+        organization_id: Uuid, // Organizatio
+        responsible_for_teams: Vec<Uuid>, // Vec<Team>
+        role_ids: Vec<Uuid>, // Vec<Role> 
+        created_at: NaiveDate,
+        updated_at: NaiveDate,
     ) -> Self {
         NewPerson {
             family_name,
             given_name,
             additional_names,
-            birth_date,
-            gender,
-            travel_document_id,
-            travel_document_issuer_id,
-            travel_group_id,
-            approved_access_level,
-            approved_access_granularity,
-        }
-    }
-
-    pub fn fake(travel_document_issuer_id: Uuid, travel_group_id: Uuid) -> NewPerson {
-
-        let mut rng = thread_rng();
-        let random_year = rng.gen_range(1945..2002);
-        let random_month = rng.gen_range(1..13);
-        let random_day = rng.gen_range(1..29);
-
-        let dob: NaiveDate = Utc.ymd(random_year, random_month, random_day).naive_utc();
-        
-        NewPerson {
-            family_name: "Doe".to_string(),
-            given_name: "Jane".to_string(),
-            additional_names: None,
-            birth_date: dob,
-            gender: "female".to_string(),
-            travel_document_id: "HDFSHFKJHD372840".to_string(),
-            travel_document_issuer_id,
-            travel_group_id,
-            approved_access_level: "medical_records".to_string(),
-            approved_access_granularity: "aggregated".to_string(),
+            organization_id,
+            responsible_for_teams,
+            role_ids,
+            created_at,
+            updated_at,
         }
     }
 }
