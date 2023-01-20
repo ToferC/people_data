@@ -3,6 +3,7 @@ pub mod handlers;
 pub mod database;
 pub mod errors;
 pub mod schema;
+pub mod graphql;
 
 use tera::{Tera, Context};
 use actix_identity::Identity;

@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use crate::PgConnection;
 use serde::{Serialize, Deserialize};
 use diesel::prelude::*;
 use diesel::{self, Insertable, Queryable};
@@ -17,22 +16,26 @@ use crate::schema::*;
 #[table_name = "organizations"]
 /// Represents an insertable Organization
 pub struct NewOrganization {
-    organization_name: String,
+    pub name_en: String,
+    pub name_fr: String,
+    pub acronym_en: String,
+    pub acronym_fr: String,
+    pub org_type: String,
 }
 
 impl NewOrganization {
     pub fn new(
-        organization_name: String,
         name_en: String,
         name_fr: String,
-        acroynm_en: String,
+        acronym_en: String,
         acronym_fr: String,
         org_type: String,
+
     ) -> Self {
         NewOrganization {
             name_en,
             name_fr,
-            acroynm_en,
+            acronym_en,
             acronym_fr,
             org_type,
         }

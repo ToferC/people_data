@@ -7,16 +7,14 @@ use diesel::{RunQueryDsl, QueryDsl};
 use uuid::Uuid;
 use async_graphql::*;
 use rand::{Rng, thread_rng};
+use crate::graphql::graphql_translate;
 
 
 use crate::schema::*;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable, AsChangeset)]
 #[table_name = "teams"]
-/// Referenced by PublicHealthProfile
-/// Referenced by Trip
-/// Need to add disaggregated data on vulnerable populations
-/// and do this ethically.
+/// Referenced by Role
 pub struct Team {
     pub id: Uuid,
 
@@ -24,8 +22,12 @@ pub struct Team {
     pub name_fr: String,
 
     pub organization_id: Uuid,
+    pub responsible_person_id: Uuid,
     
-    pub description: String,
+    pub description_en: String,
+    pub description_fr: String,
+
+    // pub milestones: Uuid // Refers to Github Milestones
 }
 
 
@@ -79,22 +81,25 @@ pub struct NewTeam {
 
     pub organization_id: Uuid,
     
-    pub description: String,
+    pub description_en: String,
+    pub description_fr: String,
 }
 
 impl NewTeam {
 
     pub fn new(
-        pub name_en: String,
-        pub name_fr: String,
-        pub organization_id: Uuid,
-        pub description: String,
+        name_en: String,
+        name_fr: String,
+        organization_id: Uuid,
+        description_en: String,
+        description_fr: String,
     ) -> Self {
         NewTeam {
             name_en,
             name_fr,
             organization_id,
-            description,
+            description_en,
+            description_fr,
         }
     }
 }

@@ -8,35 +8,38 @@ use uuid::Uuid;
 use async_graphql::*;
 use rand::{Rng, thread_rng};
 
+use crate::graphql::graphql_translate;
 
 use crate::schema::*;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable, AsChangeset)]
 #[table_name = "persons"]
-/// Referenced by PublicHealthProfile
+/// Referenced by Team
 /// Referenced by Trip
-/// Need to add disaggregated data on vulnerable populations
-/// and do this ethically.
 pub struct Person {
     pub id: Uuid,
     pub family_name: String,
     pub given_name: String,
     pub additional_names: Option<Vec<String>>,
+
+    pub organization_id: Uuid,
+
+    pub role_ids: Vec<Uuid>,
+
+    // break into demographics module
     pub birth_date: NaiveDate,
     pub gender: String,
 
+    // break into contact_information module
     pub email: String,
     pub phone: String,
+    pub work_address: String,
 
-    pub organization_id: Uuid,
-    pub branch_id: Uuid,
-    pub centre_id: Uuid,
-    pub division_id: Uuid,
-    pub team_id: Uuid,
-    pub product_teams_contribution_ids: Vec<Uuid>,
+    // break into employee_information module
+    pub group: String,
+    pub level: i32,
 
-    pub travel_group_id: Uuid,
-    
+    // break into data_access module    
     pub approved_access_level: String, // AccessLevel
     pub approved_access_granularity: String, // Granularity
     pub created_at: NaiveDateTime,
