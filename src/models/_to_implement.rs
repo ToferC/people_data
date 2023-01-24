@@ -1,4 +1,4 @@
-pub struct EmployeeInformation {
+pub struct EmployeeData {
     pub id: Uuid,
     pub person_id: Uuid,
     pub title_en: String,
@@ -11,7 +11,7 @@ pub struct EmployeeInformation {
     // salary from a separate API call
 }
 
-pub struct ContactInformation {
+pub struct ContactData {
     pub id: Uuid,
     pub person_id: Uuid,
     pub email: String,
@@ -66,17 +66,3 @@ pub struct Validations {
     pub created_at: NaiveDate,
     pub updated_at: NaiveDate,
 }
-
-pub struct Affiliation {
-    pub id: Uuid,
-    pub organization_id: Uuid,
-    pub role: String,
-    pub start_date: NaiveDate,
-    pub end_date: NaiveDate,
-    pub created_at: NaiveDate,
-    pub updated_at: NaiveDate,
-}
-
-// DemographicData
-// EmployeeData
-// DataAccess

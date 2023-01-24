@@ -9,6 +9,7 @@ use async_graphql::*;
 use rand::{Rng, thread_rng};
 
 use crate::graphql::graphql_translate;
+use crate::errors::CustomError;
 
 use crate::schema::*;
 
@@ -18,6 +19,7 @@ use crate::schema::*;
 /// Referenced by ReportingRelationship
 pub struct Person {
     pub id: Uuid,
+    pub user_id: Uuid,
     pub family_name: String,
     pub given_name: String,
     pub additional_names: Option<Vec<String>>,
