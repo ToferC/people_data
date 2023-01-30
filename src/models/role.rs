@@ -19,9 +19,11 @@ use crate::schema::*;
 pub struct Role {
     pub id: Uuid,
     pub team_id: Uuid,
+    pub person_id: Uuid,
     pub title_en: String,
     pub title_fr: String,
     pub effort: f32,
+    pub active: bool,
     pub start_date: NaiveDate,
     pub end_date: Option<NaiveDate>,
     pub created_at: NaiveDate,

@@ -17,14 +17,11 @@ use crate::schema::*;
 /// Referenced by Role
 pub struct Team {
     pub id: Uuid,
-    pub organization_id: Uuid,
-    pub org_tier_id: Uuid,
+    pub person_id: Uuid,
+    pub team_id: Uuid,
 
-    pub name_en: String,
-    pub name_fr: String,
-
-    pub description_en: String,
-    pub description_fr: String,
+    pub start_date: NaiveDate,
+    pub end_date: NaiveDate,
 
     pub created_at: NaiveDate,
     pub updated_at: NaiveDate,

@@ -26,7 +26,7 @@ pub struct Person {
 
     pub organization_id: Uuid, // Organization
     
-    pub responsible_for_teams: Vec<Uuid>, // Vec<Team>
+    pub responsible_for_teams: Option<Vec<Uuid>>, // Vec<Team>
     pub role_ids: Vec<Uuid>, // Vec<Role>    
 
     pub created_at: NaiveDate,
