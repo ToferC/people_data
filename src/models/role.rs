@@ -18,13 +18,13 @@ use crate::schema::*;
 /// Referenced by Person
 pub struct Role {
     pub id: Uuid,
-    pub team_id: Uuid,
     pub person_id: Uuid,
+    pub team_id: Uuid,
     pub title_en: String,
     pub title_fr: String,
     pub effort: f32,
     pub active: bool,
-    pub start_date: NaiveDate,
+    pub start_datestamp: NaiveDate,
     pub end_date: Option<NaiveDate>,
     pub created_at: NaiveDate,
     pub updated_at: NaiveDate,
@@ -88,10 +88,8 @@ pub struct NewRole {
     pub title_en: String,
     pub title_fr: String,
     pub effort: f32,
-    pub start_date: NaiveDate,
+    pub start_datestamp: NaiveDate,
     pub end_date: Option<NaiveDate>,
-    pub created_at: NaiveDate,
-    pub updated_at: NaiveDate,
 }
 
 impl NewRole {
@@ -101,20 +99,16 @@ impl NewRole {
         title_en: String,
         title_fr: String,
         effort: f32,
-        start_date: NaiveDate,
+        start_datestamp: NaiveDate,
         end_date: Option<NaiveDate>,
-        created_at: NaiveDate,
-        updated_at: NaiveDate,
     ) -> Self {
         NewRole {
             team_id,
             title_en,
             title_fr,
             effort,
-            start_date,
+            start_datestamp,
             end_date,
-            created_at,
-            updated_at,
         }
     }
 }

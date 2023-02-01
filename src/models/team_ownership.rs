@@ -13,15 +13,15 @@ use crate::graphql::graphql_translate;
 use crate::schema::*;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable, AsChangeset)]
-#[table_name = "teams"]
+#[table_name = "team_ownerships"]
 /// Referenced by Role
-pub struct Team {
+pub struct TeamOwnership {
     pub id: Uuid,
     pub person_id: Uuid,
     pub team_id: Uuid,
 
-    pub start_date: NaiveDate,
-    pub end_date: NaiveDate,
+    pub start_datestamp: NaiveDate,
+    pub end_date: Option<NaiveDate>,
 
     pub created_at: NaiveDate,
     pub updated_at: NaiveDate,
@@ -30,38 +30,38 @@ pub struct Team {
 }
 
 // Non Graphql
-impl Team {
-    pub fn create(conn: &PgConnection, team: &NewTeam) -> FieldResult<Team> {
-        let res = diesel::insert_into(teams::table)
-        .values(team)
+impl TeamOwnership {
+    pub fn create(conn: &PgConnection, team_ownership: &NewTeamOwnership) -> FieldResult<TeamOwnership> {
+        let res = diesel::insert_into(team_ownerships::table)
+        .values(team_ownership)
         .get_result(conn);
         
         graphql_translate(res)
     }
     
-    pub fn get_or_create(conn: &PgConnection, team: &NewTeam) -> FieldResult<Team> {
-        let res = teams::table
-        .filter(teams::name_en.eq(&team.name_en))
-        .filter(teams::name_fr.eq(&team.name_fr))
-        .filter(teams::organization_id.eq(&team.organization_id))
+    pub fn get_or_create(conn: &PgConnection, team_ownership: &NewTeamOwnership) -> FieldResult<TeamOwnership> {
+        let res = team_ownerships::table
+        .filter(team_ownerships::name_en.eq(&team_ownership.name_en))
+        .filter(team_ownerships::name_fr.eq(&team_ownership.name_fr))
+        .filter(team_ownerships::organization_id.eq(&team_ownership.organization_id))
         .distinct()
         .first(conn);
         
-        let team = match res {
+        let team_ownership = match res {
             Ok(p) => p,
             Err(e) => {
-                // Team not found
+                // TeamOwnership not found
                 println!("{:?}", e);
-                let p = Team::create(conn, team).expect("Unable to create team");
+                let p = TeamOwnership::create(conn, team_ownership).expect("Unable to create team_ownership");
                 p
             }
         };
-        Ok(team)
+        Ok(team_ownership)
     }
     
     pub fn update(&self, conn: &PgConnection) -> FieldResult<Self> {
-        let res = diesel::update(teams::table)
-        .filter(teams::id.eq(&self.id))
+        let res = diesel::update(team_ownerships::table)
+        .filter(team_ownerships::id.eq(&self.id))
         .set(self)
         .get_result(conn)?;
         
@@ -72,35 +72,28 @@ impl Team {
 #[derive(Debug, Clone, Deserialize, Serialize, Insertable, SimpleObject)]
 /// Linked from HealthProfile
 /// Linked to Trip
-#[table_name = "teams"]
-pub struct NewTeam {
-    pub name_en: String,
-    pub name_fr: String,
+#[table_name = "team_ownerships"]
+pub struct NewTeamOwnership {
+    pub person_id: Uuid,
+    pub team_id: Uuid,
 
-    pub organization_id: Uuid,
-    pub org_tier_id: Uuid,
-    
-    pub description_en: String,
-    pub description_fr: String,
+    pub start_datestamp: NaiveDate,
+    pub end_date: Option<NaiveDate>,
 }
 
-impl NewTeam {
+impl NewTeamOwnership {
 
     pub fn new(
-        name_en: String,
-        name_fr: String,
-        organization_id: Uuid,
-        org_tier_id: Uuid,
-        description_en: String,
-        description_fr: String,
+        person_id: Uuid,
+        team_id: Uuid,
+        start_datestamp: NaiveDate,
+        end_date: Option<NaiveDate>,
     ) -> Self {
-        NewTeam {
-            name_en,
-            name_fr,
-            organization_id,
-            org_tier_id,
-            description_en,
-            description_fr,
+        NewTeamOwnership {
+            person_id,
+            team_id,
+            start_datestamp,
+            end_date,
         }
     }
 }

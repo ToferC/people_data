@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use chrono::NaiveDate;
 use serde::{Serialize, Deserialize};
 use diesel::prelude::*;
 use diesel::{self, Insertable, Queryable};
@@ -12,36 +13,6 @@ use async_graphql::*;
 use crate::graphql::graphql_translate;
 use crate::schema::*;
 
-#[derive(Debug, Clone, Deserialize, Serialize, Insertable)]
-#[table_name = "organizations"]
-/// Represents an insertable Organization
-pub struct NewOrganization {
-    pub name_en: String,
-    pub name_fr: String,
-    pub acronym_en: String,
-    pub acronym_fr: String,
-    pub org_type: String,
-}
-
-impl NewOrganization {
-    pub fn new(
-        name_en: String,
-        name_fr: String,
-        acronym_en: String,
-        acronym_fr: String,
-        org_type: String,
-
-    ) -> Self {
-        NewOrganization {
-            name_en,
-            name_fr,
-            acronym_en,
-            acronym_fr,
-            org_type,
-        }
-    }
-}
-
 #[derive(Debug, Clone, Deserialize, Serialize, Queryable, Identifiable, SimpleObject)]
 #[table_name = "organizations"]
 /// Should get this from an API or have standard data
@@ -53,6 +24,9 @@ pub struct Organization {
     pub acroynm_en: String,
     pub acronym_fr: String,
     pub org_type: String,
+    pub created_at: NaiveDate,
+    pub updated_at: NaiveDate,
+    pub retired_at: Option<NaiveDate>,
 }
 
 impl Organization {
@@ -82,5 +56,35 @@ impl Organization {
         };
 
         organizations 
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Insertable)]
+#[table_name = "organizations"]
+/// Represents an insertable Organization
+pub struct NewOrganization {
+    pub name_en: String,
+    pub name_fr: String,
+    pub acronym_en: String,
+    pub acronym_fr: String,
+    pub org_type: String,
+}
+
+impl NewOrganization {
+    pub fn new(
+        name_en: String,
+        name_fr: String,
+        acronym_en: String,
+        acronym_fr: String,
+        org_type: String,
+
+    ) -> Self {
+        NewOrganization {
+            name_en,
+            name_fr,
+            acronym_en,
+            acronym_fr,
+            org_type,
+        }
     }
 }

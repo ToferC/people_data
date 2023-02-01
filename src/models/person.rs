@@ -24,13 +24,11 @@ pub struct Person {
     pub given_name: String,
     pub additional_names: Option<Vec<String>>,
 
-    pub organization_id: Uuid, // Organization
-    
-    pub responsible_for_teams: Option<Vec<Uuid>>, // Vec<Team>
-    pub role_ids: Vec<Uuid>, // Vec<Role>    
+    pub organization_id: Uuid, // Organization 
 
     pub created_at: NaiveDate,
     pub updated_at: NaiveDate,
+    pub retired_at: Option<NaiveDate>,
 }
 
 
@@ -85,21 +83,13 @@ impl Person {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Insertable, SimpleObject)]
-/// Linked from HealthProfile
-/// Linked to Trip
+/// Referenced by Roles, TeamOwnership, OrgOwnership
 #[table_name = "persons"]
 pub struct NewPerson {
     pub family_name: String,
     pub given_name: String,
     pub additional_names: Option<Vec<String>>,
-
     pub organization_id: Uuid, // Organization
-    
-    pub responsible_for_teams: Vec<Uuid>, // Vec<Team>
-    pub role_ids: Vec<Uuid>, // Vec<Role>    
-
-    pub created_at: NaiveDate,
-    pub updated_at: NaiveDate,
 }
 
 impl NewPerson {
@@ -109,20 +99,12 @@ impl NewPerson {
         given_name: String,
         additional_names: Option<Vec<String>>,
         organization_id: Uuid, // Organizatio
-        responsible_for_teams: Vec<Uuid>, // Vec<Team>
-        role_ids: Vec<Uuid>, // Vec<Role> 
-        created_at: NaiveDate,
-        updated_at: NaiveDate,
     ) -> Self {
         NewPerson {
             family_name,
             given_name,
             additional_names,
             organization_id,
-            responsible_for_teams,
-            role_ids,
-            created_at,
-            updated_at,
         }
     }
 }

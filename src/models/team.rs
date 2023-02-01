@@ -28,6 +28,7 @@ pub struct Team {
 
     pub created_at: NaiveDate,
     pub updated_at: NaiveDate,
+    pub retired_at: Option<NaiveDate>,
 
     // pub milestones: Uuid // Refers to Github Milestones
 }

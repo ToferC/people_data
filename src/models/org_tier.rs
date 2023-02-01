@@ -17,11 +17,10 @@ use crate::schema::*;
 pub struct OrgTier {
     pub id: Uuid,
     pub organization_id: Uuid, // Organization
-    pub level: i32,
+    pub tier_level: i32,
     pub name_en: String,
     pub name_fr: String,
     pub parent_tier: Option<Uuid>, // Recursive reference to OrgTier
-    pub owner_id: Uuid, // References person
     pub created_at: NaiveDate,
     pub updated_at: NaiveDate,
     pub retired_at: Option<NaiveDate>,
@@ -81,39 +80,27 @@ impl OrgTier {
 #[table_name = "org_tiers"]
 pub struct NewOrgTier {
     pub organization_id: Uuid, // Organization
-    pub level: i32,
+    pub tier_level: i32,
     pub name_en: String,
     pub name_fr: String,
     pub parent_tier: Option<Uuid>, // Recursive reference to OrgTier
-    pub owner_id: Uuid, // References person
-    pub created_at: NaiveDate,
-    pub updated_at: NaiveDate,
-    pub retired_at: Option<NaiveDate>,
 }
 
 impl NewOrgTier {
 
     pub fn new(
         organization_id: Uuid, // Organization
-        level: i32,
+        tier_level: i32,
         name_en: String,
         name_fr: String,
         parent_tier: Option<Uuid>, // Recursive reference to OrgTier
-        owner_id: Uuid, // References person
-        created_at: NaiveDate,
-        updated_at: NaiveDate,
-        retired_at: Option<NaiveDate>,
     ) -> Self {
         NewOrgTier {
             organization_id,
-            level,
+            tier_level,
             name_en,
             name_fr,
             parent_tier,
-            owner_id,
-            created_at,
-            updated_at,
-            retired_at,
         }
     }
 }
