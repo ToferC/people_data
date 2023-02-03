@@ -11,6 +11,8 @@ use crate::graphql::graphql_translate;
 
 
 use crate::schema::*;
+use crate::database::connection;
+use crate::errors::CustomError;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable, AsChangeset)]
 #[table_name = "team_ownerships"]
@@ -20,11 +22,11 @@ pub struct TeamOwnership {
     pub person_id: Uuid,
     pub team_id: Uuid,
 
-    pub start_datestamp: NaiveDate,
-    pub end_date: Option<NaiveDate>,
+    pub start_datestamp: NaiveDateTime,
+    pub end_date: Option<NaiveDateTime>,
 
-    pub created_at: NaiveDate,
-    pub updated_at: NaiveDate,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 
     // pub milestones: Uuid // Refers to Github Milestones
 }
@@ -41,9 +43,8 @@ impl TeamOwnership {
     
     pub fn get_or_create(conn: &PgConnection, team_ownership: &NewTeamOwnership) -> FieldResult<TeamOwnership> {
         let res = team_ownerships::table
-        .filter(team_ownerships::name_en.eq(&team_ownership.name_en))
-        .filter(team_ownerships::name_fr.eq(&team_ownership.name_fr))
-        .filter(team_ownerships::organization_id.eq(&team_ownership.organization_id))
+        .filter(team_ownerships::person_id.eq(&team_ownership.person_id))
+        .filter(team_ownerships::team_id.eq(&team_ownership.team_id))
         .distinct()
         .first(conn);
         
@@ -77,8 +78,8 @@ pub struct NewTeamOwnership {
     pub person_id: Uuid,
     pub team_id: Uuid,
 
-    pub start_datestamp: NaiveDate,
-    pub end_date: Option<NaiveDate>,
+    pub start_datestamp: NaiveDateTime,
+    pub end_date: Option<NaiveDateTime>,
 }
 
 impl NewTeamOwnership {
@@ -86,8 +87,8 @@ impl NewTeamOwnership {
     pub fn new(
         person_id: Uuid,
         team_id: Uuid,
-        start_datestamp: NaiveDate,
-        end_date: Option<NaiveDate>,
+        start_datestamp: NaiveDateTime,
+        end_date: Option<NaiveDateTime>,
     ) -> Self {
         NewTeamOwnership {
             person_id,

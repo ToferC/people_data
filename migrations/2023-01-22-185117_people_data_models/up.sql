@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS organizations (
     name_fr VARCHAR(256) UNIQUE NOT NULL,
     acronym_en VARCHAR(16) UNIQUE NOT NULL,
     acronym_fr VARCHAR(16) UNIQUE NOT NULL,
-    otg_type VARCHAR(32) NOT NULL,
+    org_type VARCHAR(32) NOT NULL,
 
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -18,7 +18,6 @@ CREATE TABLE IF NOT EXISTS persons (
     user_id UUID UNIQUE NOT NULL,
     family_name VARCHAR NOT NULL,
     given_name VARCHAR NOT NULL,
-    additional_names TEXT[],
     
     organization_id UUID NOT NULL,
     FOREIGN KEY(organization_id)
@@ -26,7 +25,7 @@ CREATE TABLE IF NOT EXISTS persons (
     
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    retired_at TIMESTAMP DEFAULT NULL
+    retired_at TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS org_tiers (

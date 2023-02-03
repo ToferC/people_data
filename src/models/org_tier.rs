@@ -10,6 +10,8 @@ use rand::{Rng, thread_rng};
 
 use crate::graphql::graphql_translate;
 
+use crate::database::connection;
+use crate::errors::CustomError;
 use crate::schema::*;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable, AsChangeset)]
@@ -21,9 +23,9 @@ pub struct OrgTier {
     pub name_en: String,
     pub name_fr: String,
     pub parent_tier: Option<Uuid>, // Recursive reference to OrgTier
-    pub created_at: NaiveDate,
-    pub updated_at: NaiveDate,
-    pub retired_at: Option<NaiveDate>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+    pub retired_at: Option<NaiveDateTime>,
 }
 
 // Non Graphql
@@ -38,7 +40,7 @@ impl OrgTier {
     
     pub fn get_or_create(conn: &PgConnection, org_tier: &NewOrgTier) -> FieldResult<OrgTier> {
         let res = org_tiers::table
-        .filter(org_tiers::family_name.eq(&org_tier.family_name))
+        .filter(org_tiers::name_en.eq(&org_tier.name_en))
         .distinct()
         .first(conn);
         
@@ -55,13 +57,13 @@ impl OrgTier {
     }
 
     pub fn find_all() -> Result<Vec<Self>, CustomError> {
-        let conn = database::connection()?;
+        let conn = connection()?;
         let org_tiers = org_tiers::table.load::<OrgTier>(&conn)?;
         Ok(org_tiers)
     }
 
     pub fn find(id: Uuid) -> Result<Self, CustomError> {
-        let conn = database::connection()?;
+        let conn = connection()?;
         let org_tier = org_tiers::table.filter(org_tiers::id.eq(id)).first(&conn)?;
         Ok(org_tier)
     }

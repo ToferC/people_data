@@ -11,6 +11,8 @@ use rand::{Rng, thread_rng};
 use crate::graphql::graphql_translate;
 
 use crate::schema::*;
+use crate::errors::CustomError;
+use crate::database::connection;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable, AsChangeset)]
 #[table_name = "roles"]
@@ -22,12 +24,12 @@ pub struct Role {
     pub team_id: Uuid,
     pub title_en: String,
     pub title_fr: String,
-    pub effort: f32,
+    pub effort: f64,
     pub active: bool,
-    pub start_datestamp: NaiveDate,
-    pub end_date: Option<NaiveDate>,
-    pub created_at: NaiveDate,
-    pub updated_at: NaiveDate,
+    pub start_datestamp: NaiveDateTime,
+    pub end_date: Option<NaiveDateTime>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 
@@ -43,7 +45,7 @@ impl Role {
     
     pub fn get_or_create(conn: &PgConnection, role: &NewRole) -> FieldResult<Role> {
         let res = roles::table
-        .filter(roles::family_name.eq(&role.family_name))
+        .filter(roles::person_id.eq(&role.person_id))
         .distinct()
         .first(conn);
         
@@ -60,13 +62,13 @@ impl Role {
     }
 
     pub fn find_all() -> Result<Vec<Self>, CustomError> {
-        let conn = database::connection()?;
+        let conn = connection()?;
         let roles = roles::table.load::<Role>(&conn)?;
         Ok(roles)
     }
 
     pub fn find(id: Uuid) -> Result<Self, CustomError> {
-        let conn = database::connection()?;
+        let conn = connection()?;
         let role = roles::table.filter(roles::id.eq(id)).first(&conn)?;
         Ok(role)
     }
@@ -84,29 +86,38 @@ impl Role {
 #[derive(Debug, Clone, Deserialize, Serialize, Insertable, SimpleObject)]
 #[table_name = "roles"]
 pub struct NewRole {
+    pub id: Uuid,
+    pub person_id: Uuid,
     pub team_id: Uuid,
     pub title_en: String,
     pub title_fr: String,
-    pub effort: f32,
-    pub start_datestamp: NaiveDate,
-    pub end_date: Option<NaiveDate>,
+    pub effort: f64,
+    pub active: bool,
+    pub start_datestamp: NaiveDateTime,
+    pub end_date: Option<NaiveDateTime>,
 }
 
 impl NewRole {
 
     pub fn new(
+        id: Uuid,
+        person_id: Uuid,
         team_id: Uuid,
         title_en: String,
         title_fr: String,
-        effort: f32,
-        start_datestamp: NaiveDate,
-        end_date: Option<NaiveDate>,
+        effort: f64,
+        active: bool,
+        start_datestamp: NaiveDateTime,
+        end_date: Option<NaiveDateTime>,
     ) -> Self {
         NewRole {
+            id,
+            person_id,
             team_id,
             title_en,
             title_fr,
             effort,
+            active,
             start_datestamp,
             end_date,
         }

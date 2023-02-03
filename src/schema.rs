@@ -1,4 +1,6 @@
-table! {
+// @generated automatically by Diesel CLI.
+
+diesel::table! {
     email_verification_code (id) {
         id -> Uuid,
         email_address -> Varchar,
@@ -7,7 +9,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     org_tier_ownerships (id) {
         id -> Uuid,
         owner_id -> Uuid,
@@ -18,7 +20,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     org_tiers (id) {
         id -> Uuid,
         organization_id -> Uuid,
@@ -32,21 +34,21 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     organizations (id) {
         id -> Uuid,
         name_en -> Varchar,
         name_fr -> Varchar,
         acronym_en -> Varchar,
         acronym_fr -> Varchar,
-        otg_type -> Varchar,
+        org_type -> Varchar,
         created_at -> Timestamp,
         updated_at -> Timestamp,
         retired_at -> Nullable<Timestamp>,
     }
 }
 
-table! {
+diesel::table! {
     password_reset_token (id) {
         id -> Uuid,
         email_address -> Varchar,
@@ -55,13 +57,12 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     persons (id) {
         id -> Uuid,
         user_id -> Uuid,
         family_name -> Varchar,
         given_name -> Varchar,
-        additional_names -> Nullable<Array<Text>>,
         organization_id -> Uuid,
         created_at -> Timestamp,
         updated_at -> Timestamp,
@@ -69,7 +70,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     roles (id) {
         id -> Uuid,
         person_id -> Uuid,
@@ -85,7 +86,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     team_ownerships (id) {
         id -> Uuid,
         person_id -> Uuid,
@@ -97,7 +98,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     teams (id) {
         id -> Uuid,
         organization_id -> Uuid,
@@ -112,7 +113,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     users (id) {
         id -> Uuid,
         hash -> Bytea,
@@ -126,18 +127,18 @@ table! {
     }
 }
 
-joinable!(org_tier_ownerships -> org_tiers (org_tier_id));
-joinable!(org_tier_ownerships -> persons (owner_id));
-joinable!(org_tiers -> organizations (organization_id));
-joinable!(persons -> organizations (organization_id));
-joinable!(roles -> persons (person_id));
-joinable!(roles -> teams (team_id));
-joinable!(team_ownerships -> persons (person_id));
-joinable!(team_ownerships -> teams (team_id));
-joinable!(teams -> org_tiers (org_tier_id));
-joinable!(teams -> organizations (organization_id));
+diesel::joinable!(org_tier_ownerships -> org_tiers (org_tier_id));
+diesel::joinable!(org_tier_ownerships -> persons (owner_id));
+diesel::joinable!(org_tiers -> organizations (organization_id));
+diesel::joinable!(persons -> organizations (organization_id));
+diesel::joinable!(roles -> persons (person_id));
+diesel::joinable!(roles -> teams (team_id));
+diesel::joinable!(team_ownerships -> persons (person_id));
+diesel::joinable!(team_ownerships -> teams (team_id));
+diesel::joinable!(teams -> org_tiers (org_tier_id));
+diesel::joinable!(teams -> organizations (organization_id));
 
-allow_tables_to_appear_in_same_query!(
+diesel::allow_tables_to_appear_in_same_query!(
     email_verification_code,
     org_tier_ownerships,
     org_tiers,

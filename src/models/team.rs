@@ -11,6 +11,8 @@ use crate::graphql::graphql_translate;
 
 
 use crate::schema::*;
+use crate::errors::CustomError;
+use crate::database::connection;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable, AsChangeset)]
 #[table_name = "teams"]
@@ -26,9 +28,9 @@ pub struct Team {
     pub description_en: String,
     pub description_fr: String,
 
-    pub created_at: NaiveDate,
-    pub updated_at: NaiveDate,
-    pub retired_at: Option<NaiveDate>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+    pub retired_at: Option<NaiveDateTime>,
 
     // pub milestones: Uuid // Refers to Github Milestones
 }

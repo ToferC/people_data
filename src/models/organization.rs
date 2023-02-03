@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::NaiveDate;
+use chrono::NaiveDateTime;
 use serde::{Serialize, Deserialize};
 use diesel::prelude::*;
 use diesel::{self, Insertable, Queryable};
@@ -24,9 +24,9 @@ pub struct Organization {
     pub acroynm_en: String,
     pub acronym_fr: String,
     pub org_type: String,
-    pub created_at: NaiveDate,
-    pub updated_at: NaiveDate,
-    pub retired_at: Option<NaiveDate>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+    pub retired_at: Option<NaiveDateTime>,
 }
 
 impl Organization {
