@@ -30,26 +30,30 @@ pub struct OrgTier {
 
 // Non Graphql
 impl OrgTier {
-    pub fn create(conn: &PgConnection, org_tier: &NewOrgTier) -> FieldResult<OrgTier> {
+    pub fn create(org_tier: &NewOrgTier) -> FieldResult<OrgTier> {
+        let conn = connection()?;
+
         let res = diesel::insert_into(org_tiers::table)
         .values(org_tier)
-        .get_result(conn);
+        .get_result(&conn);
         
         graphql_translate(res)
     }
     
-    pub fn get_or_create(conn: &PgConnection, org_tier: &NewOrgTier) -> FieldResult<OrgTier> {
+    pub fn get_or_create(org_tier: &NewOrgTier) -> FieldResult<OrgTier> {
+        let conn = connection()?;
+
         let res = org_tiers::table
         .filter(org_tiers::name_en.eq(&org_tier.name_en))
         .distinct()
-        .first(conn);
+        .first(&conn);
         
         let org_tier = match res {
             Ok(p) => p,
             Err(e) => {
                 // OrgTier not found
                 println!("{:?}", e);
-                let p = OrgTier::create(conn, org_tier).expect("Unable to create org_tier");
+                let p = OrgTier::create(org_tier).expect("Unable to create org_tier");
                 p
             }
         };
@@ -68,11 +72,13 @@ impl OrgTier {
         Ok(org_tier)
     }
     
-    pub fn update(&self, conn: &PgConnection) -> FieldResult<Self> {
+    pub fn update(&self) -> FieldResult<Self> {
+        let conn = connection()?;
+
         let res = diesel::update(org_tiers::table)
         .filter(org_tiers::id.eq(&self.id))
         .set(self)
-        .get_result(conn)?;
+        .get_result(&conn)?;
         
         Ok(res)
     }

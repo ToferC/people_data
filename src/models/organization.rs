@@ -10,6 +10,7 @@ use uuid::Uuid;
 
 use async_graphql::*;
 
+use crate::database::connection;
 use crate::graphql::graphql_translate;
 use crate::schema::*;
 
@@ -30,25 +31,31 @@ pub struct Organization {
 }
 
 impl Organization {
-    pub fn create(conn: &PgConnection, organization: &NewOrganization) -> FieldResult<Organization> {
+    pub fn create(organization: &NewOrganization) -> FieldResult<Organization> {
+        let conn = connection()?;
+
         let res = diesel::insert_into(organizations::table)
             .values(organization)
-            .get_result(conn);
+            .get_result(&conn);
 
         graphql_translate(res)
     }
 
-    pub fn get_by_id(conn: &PgConnection, id: &Uuid) -> FieldResult<Organization> {
+    pub fn get_by_id(id: &Uuid) -> FieldResult<Organization> {
+        let conn = connection()?;
+
         let res = organizations::table.filter(organizations::id.eq(id))
-            .first(conn);
+            .first(&conn);
 
         graphql_translate(res)
     }
 
-    pub fn load_into_hash(conn: &PgConnection) -> HashMap<Uuid, Organization> {
+    pub fn load_into_hash() -> HashMap<Uuid, Organization> {
+        let conn = connection().expect("Unable to make connection");
+
         let res = organizations::table
-            .load::<Organization>(conn)
-            .expect("Unable to load organizations");
+            .load::<Organization>(&conn)
+            .expect("Unable to get organizations");
 
         let mut organizations: HashMap<Uuid, Organization> = HashMap::new();
         for c in res {

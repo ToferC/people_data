@@ -28,26 +28,30 @@ pub struct OrgOwnership {
 
 // Non Graphql
 impl OrgOwnership {
-    pub fn create(conn: &PgConnection, org_tier_ownership: &NewOrgOwnership) -> FieldResult<OrgOwnership> {
+    pub fn create(org_tier_ownership: &NewOrgOwnership) -> FieldResult<OrgOwnership> {
+        let conn = connection()?;
+
         let res = diesel::insert_into(org_tier_ownerships::table)
-        .values(org_tier_ownership)
-        .get_result(conn);
+            .values(org_tier_ownership)
+            .get_result(&conn);
         
         graphql_translate(res)
     }
     
-    pub fn get_or_create(conn: &PgConnection, org_tier_ownership: &NewOrgOwnership) -> FieldResult<OrgOwnership> {
+    pub fn get_or_create(org_tier_ownership: &NewOrgOwnership) -> FieldResult<OrgOwnership> {
+        let conn = connection()?;
+
         let res = org_tier_ownerships::table
-        .filter(org_tier_ownerships::org_tier_id.eq(&org_tier_ownership.org_tier_id))
-        .distinct()
-        .first(conn);
+            .filter(org_tier_ownerships::org_tier_id.eq(&org_tier_ownership.org_tier_id))
+            .distinct()
+            .first(&conn);
         
         let org_tier_ownership = match res {
             Ok(p) => p,
             Err(e) => {
                 // OrgOwnership not found
                 println!("{:?}", e);
-                let p = OrgOwnership::create(conn, org_tier_ownership).expect("Unable to create org_tier_ownership");
+                let p = OrgOwnership::create(org_tier_ownership).expect("Unable to create org_tier_ownership");
                 p
             }
         };
@@ -66,11 +70,13 @@ impl OrgOwnership {
         Ok(org_tier_ownership)
     }
     
-    pub fn update(&self, conn: &PgConnection) -> FieldResult<Self> {
+    pub fn update(&self) -> FieldResult<Self> {
+        let conn = connection()?;
+
         let res = diesel::update(org_tier_ownerships::table)
-        .filter(org_tier_ownerships::id.eq(&self.id))
-        .set(self)
-        .get_result(conn)?;
+            .filter(org_tier_ownerships::id.eq(&self.id))
+            .set(self)
+            .get_result(&conn)?;
         
         Ok(res)
     }
